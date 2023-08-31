@@ -1,24 +1,147 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <title>Books</title>
+    <title>Book Management</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        label {
+            width: 80px;
+            display: inline-block;
+        }
+    </style>
 </head>
 <body>
-<h1>Books Information</h1>
+<h1>Book List</h1>
 <table>
+    <thead>
     <tr>
         <th>ID</th>
         <th>Title</th>
         <th>Author</th>
         <th>Price</th>
+        <th>Action</th>
     </tr>
+    </thead>
+    <tbody>
     <tr th:each="book : ${books}">
         <td th:text="${book.id}"></td>
         <td th:text="${book.title}"></td>
         <td th:text="${book.author}"></td>
         <td th:text="${book.price}"></td>
+        <td>
+            <button th:onclick="'deleteBook(' + ${book.id} + ')'">Delete</button>
+        </td>
     </tr>
+    </tbody>
 </table>
+
+<!--<h2>Add a New Book</h2>-->
+<!--<form id="addBookForm">-->
+<!--    Title:  <input type="text" id="title"><br>-->
+<!--    Author: <input type="text" id="author"><br>-->
+<!--    Price:  <input type="number" id="price"><br>-->
+<!--    <button type="button" onclick="addBook()">Add</button>-->
+<!--</form>-->
+
+<!--<h2>Update a Book</h2>-->
+<!--<form id="updateBookForm">-->
+<!--    ID:     <input type="number" id="updateId"><br>-->
+<!--    Title:  <input type="text" id="updateTitle"><br>-->
+<!--    Author: <input type="text" id="updateAuthor"><br>-->
+<!--    Price:  <input type="number" id="updatePrice"><br>-->
+<!--    <button type="button" onclick="updateBook()">Update</button>-->
+<!--</form>-->
+
+<table>
+    <thead>
+    <tr>
+        <th>Add a New Book</th>
+        <th>Update a Book</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td>
+            <form id="addBookForm">
+                <label>Title:</label>  <input type="text" id="title"><br>
+                <label>Author:</label> <input type="text" id="author"><br>
+                <label>Price:</label>  <input type="number" id="price"><br>
+                <button type="button" onclick="addBook()">Add</button>
+            </form>
+        </td>
+        <td>
+            <form id="updateBookForm">
+                <label>ID:</label>     <input type="number" id="updateId"><br>
+                <label>Title:</label>  <input type="text" id="updateTitle"><br>
+                <label>Author:</label> <input type="text" id="updateAuthor"><br>
+                <label>Price:</label>  <input type="number" id="updatePrice"><br>
+                <button type="button" onclick="updateBook()">Update</button>
+            </form>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<script>
+    function addBook() {
+        const bookData = {
+            title: $("#title").val(),
+            author: $("#author").val(),
+            price: $("#price").val()
+        };
+
+        $.ajax({
+            type: "POST",
+            url: "/add",
+            contentType: "application/json",
+            data: JSON.stringify(bookData),
+            success: function(response) {
+                alert(response);
+                location.reload();
+            },
+            error: function(error) {
+                alert("Error: " + error.responseText);
+            }
+        });
+    }
+
+    function updateBook() {
+        const bookData = {
+            id: $("#updateId").val(),
+            title: $("#updateTitle").val(),
+            author: $("#updateAuthor").val(),
+            price: $("#updatePrice").val()
+        };
+
+        $.ajax({
+            type: "POST",
+            url: "/update/" + bookData.id,
+            contentType: "application/json",
+            data: JSON.stringify(bookData),
+            success: function(response) {
+                alert(response);
+                location.reload();
+            },
+            error: function(error) {
+                alert("Error: " + error.responseText);
+            }
+        });
+    }
+
+    function deleteBook(id) {
+        $.ajax({
+            type: "POST",
+            url: "/delete/" + id,
+            success: function(response) {
+                alert(response);
+                location.reload();
+            },
+            error: function(error) {
+                alert("Error: " + error.responseText);
+            }
+        });
+    }
+</script>
+
 </body>
 </html>
